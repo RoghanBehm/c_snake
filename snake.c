@@ -4,6 +4,18 @@
 #include "game_state.h"
 #include "snake_logic.h"
 
+bool apple_flag = false;
+
+int random_in_range(int min, int max) {
+    return min + rand() % (max - min + 1);
+}
+
+
+void place_apple(SDL_Renderer *renderer, Sint32 *apple_x, Sint32 *apple_y) {
+    *apple_x = random_in_range(0, 59);
+    *apple_y = random_in_range(0, 79);
+}
+
 int main () {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         SDL_Log("Unable to initialise SDL: %s", SDL_GetError());
@@ -36,6 +48,8 @@ int main () {
     int frameTime;
     Uint32 last_timestamp = 0;
     Snake *snake = init_snake(50, 50, 3, 'R');
+    Sint32 apple_x = 0;
+    Sint32 apple_y = 0;
     while (game.running) {
         frameStart = SDL_GetTicks();
         
@@ -68,19 +82,37 @@ int main () {
         }
         
 
+        
+        
         // Draw black background
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+        
+        // Draw apple
+        SDL_Rect apple = {apple_x * 10, apple_y * 10, 10, 10};
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &apple);
 
+        if (!apple_flag) {
+            place_apple(renderer, &apple_x, &apple_y);
+            apple_flag = true;
+        }
+        
+        
         SnakeSegment *currentHead = snake->head;
-       while (currentHead != NULL) {
+        // Draw segments
+        while (currentHead != NULL) {
             SDL_Rect seg = {currentHead->x * 10, currentHead->y * 10, 10, 10};
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
             SDL_RenderFillRect(renderer, &seg);
             currentHead = currentHead->next;
-       }
-            
-     
+        }
+        
+        if (snake->head->x == apple_x && snake->head->y == apple_y) {
+            grow_snake(snake);
+            place_apple(renderer, &apple_x, &apple_y);
+        }
+
         SDL_RenderPresent(renderer);
 
         frameTime = SDL_GetTicks();

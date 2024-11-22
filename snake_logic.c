@@ -87,3 +87,4 @@ void shrink_snake(Snake *snake) {
     snake->tail->next = NULL;
     free(old_tail);
 }
+
