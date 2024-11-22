@@ -1,17 +1,5 @@
 #include <stdio.h>
-
-typedef struct SnakeSegment {
-    int x;
-    int y;
-    struct SnakeSegment *next;
-    struct SnakeSegment *prev;
-} SnakeSegment;
-
-typedef struct {
-    SnakeSegment *head;
-    SnakeSegment *tail;
-    char direction;
-} Snake;
+#include "snake_logic.h"
 
 Snake *init_snake (int start_x, int start_y, int start_length, char start_direction) {
     Snake *snake = malloc(sizeof(Snake));
@@ -57,7 +45,10 @@ void move_snake(Snake *snake) {
     new_head->y = new_y;
     new_head->prev = NULL;
     new_head->next = snake->head;
-    snake->head->prev = new_head;
+
+    if(snake->head) {
+        snake->head->prev = new_head;
+    }
     snake->head = new_head;
 
     SnakeSegment *old_tail = snake->tail;
@@ -84,4 +75,15 @@ void grow_snake(Snake *snake) {
     new_head->next = snake->head;
     snake->head->prev = new_head;
     snake->head = new_head;
+}
+
+void shrink_snake(Snake *snake) {
+
+    if (snake->head == snake->tail) { // Does not shrink if snake is only 1 segment long
+        return; 
+    }
+    SnakeSegment *old_tail = snake->tail;
+    snake->tail = old_tail->prev;
+    snake->tail->next = NULL;
+    free(old_tail);
 }

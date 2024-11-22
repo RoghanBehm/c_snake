@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include "game_state.h"
+#include "snake_logic.h"
 
 int main () {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -33,27 +34,53 @@ int main () {
 
     Uint32 frameStart;
     int frameTime;
-
-
+    Uint32 last_timestamp = 0;
+    Snake *snake = init_snake(50, 50, 3, 'R');
     while (game.running) {
         frameStart = SDL_GetTicks();
+        
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 game.running = false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                    case SDLK_w:
+                        if (snake->direction != 'D') snake->direction = 'U';
+                        break;
+                    case SDLK_s:
+                        if (snake->direction != 'U') snake->direction = 'D';
+                        break;
+                    case SDLK_d:
+                        if (snake->direction != 'L') snake->direction = 'R';
+                        break;
+                    case SDLK_a:
+                        if (snake->direction != 'R') snake->direction = 'L';
+                        break;
+                }
+            }
         }
+        if (SDL_GetTicks() - last_timestamp >= game.snake_speed) {
+            move_snake(snake);
+            last_timestamp = SDL_GetTicks();
+        }
+        
 
         // Draw black background
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Draw red square
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect square = {50, 50, 50, 50};
-        SDL_RenderFillRect(renderer, &square);
-
-        
+        SnakeSegment *currentHead = snake->head;
+       while (currentHead != NULL) {
+            SDL_Rect seg = {currentHead->x * 10, currentHead->y * 10, 10, 10};
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_RenderFillRect(renderer, &seg);
+            currentHead = currentHead->next;
+       }
+            
+     
         SDL_RenderPresent(renderer);
 
         frameTime = SDL_GetTicks();

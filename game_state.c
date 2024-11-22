@@ -6,5 +6,6 @@ GameState game = {
     .cell_size = 20,
     .running = 1,
     .window = NULL,
-    .renderer = NULL
+    .renderer = NULL,
+    .snake_speed = 200
 };

@@ -9,6 +9,7 @@ typedef struct {
     int running;
     SDL_Window *window;
     SDL_Renderer *renderer;
+    int snake_speed;
 } GameState;
 
 extern GameState game;
