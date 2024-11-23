@@ -5,6 +5,7 @@
 #include "snake_logic.h"
 
 bool apple_flag = false;
+bool direction_changed = false;
 
 int random_in_range(int min, int max) {
     return min + rand() % (max - min + 1);
@@ -59,25 +60,40 @@ int main () {
                 game.running = false;
             }
 
-            if (event.type == SDL_KEYDOWN) {
+            if (event.type == SDL_KEYDOWN && !direction_changed) {
                 switch (event.key.keysym.sym) {
                     case SDLK_w:
-                        if (snake->direction != 'D') snake->direction = 'U';
-                        break;
+                        if (snake->direction != 'D') {
+                            snake->direction = 'U';
+                            direction_changed = true;
+                            break;
+                        }
+                            
                     case SDLK_s:
-                        if (snake->direction != 'U') snake->direction = 'D';
-                        break;
+                        if (snake->direction != 'U') {
+                            snake->direction = 'D';
+                            direction_changed = true;
+                            break;
+                        }
                     case SDLK_d:
-                        if (snake->direction != 'L') snake->direction = 'R';
-                        break;
+                        if (snake->direction != 'L') {
+                            snake->direction = 'R';
+                            direction_changed = true;
+                            break;
+                        }
+                            
                     case SDLK_a:
-                        if (snake->direction != 'R') snake->direction = 'L';
-                        break;
+                        if (snake->direction != 'R') {
+                           snake->direction = 'L';
+                            direction_changed = true;
+                            break; 
+                        } 
                 }
             }
         }
         if (SDL_GetTicks() - last_timestamp >= game.snake_speed) {
             move_snake(snake);
+            direction_changed = false;
             last_timestamp = SDL_GetTicks();
         }
         
@@ -112,6 +128,7 @@ int main () {
         if (snake->head->x == apple_x && snake->head->y == apple_y) {
             grow_snake(snake);
             place_apple(renderer, &apple_x, &apple_y);
+            game.snake_speed -= 5;
         }
 
         //  Snake segment collision check
