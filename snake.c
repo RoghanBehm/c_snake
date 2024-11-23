@@ -5,6 +5,7 @@
 #include "snake_logic.h"
 
 bool apple_flag = false;
+bool pApple_flag = false;
 bool direction_changed = false;
 
 int random_in_range(int min, int max) {
@@ -15,6 +16,11 @@ int random_in_range(int min, int max) {
 void place_apple(SDL_Renderer *renderer, Sint32 *apple_x, Sint32 *apple_y) {
     *apple_x = random_in_range(0, 79);
     *apple_y = random_in_range(0, 59);
+}
+
+void place_pApple(SDL_Renderer *renderer, Sint32 *pApple_x, Sint32 *pApple_y) {
+    *pApple_x = random_in_range(0, 79);
+    *pApple_y = random_in_range(0, 59);
 }
 
 int main () {
@@ -51,6 +57,8 @@ int main () {
     Snake *snake = init_snake(50, 50, 3, 'R');
     Sint32 apple_x = 0;
     Sint32 apple_y = 0;
+    Sint32 pApple_x = 0;
+    Sint32 pApple_y = 0;
     while (game.running) {
         frameStart = SDL_GetTicks();
         
@@ -106,14 +114,23 @@ int main () {
         
         // Draw apple
         SDL_Rect apple = {apple_x * 10, apple_y * 10, 10, 10};
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 144, 238, 144, 255);
         SDL_RenderFillRect(renderer, &apple);
+
+        // Draw poison apple
+        SDL_Rect pApple = {pApple_x * 10, pApple_y * 10, 10, 10};
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &pApple);
 
         if (!apple_flag) {
             place_apple(renderer, &apple_x, &apple_y);
             apple_flag = true;
         }
         
+        if (!pApple_flag) {
+            place_pApple(renderer, &pApple_x, &pApple_y);
+            pApple_flag = true;
+        }
         
         SnakeSegment *currentHead = snake->head;
         // Draw segments
@@ -129,6 +146,14 @@ int main () {
             grow_snake(snake);
             place_apple(renderer, &apple_x, &apple_y);
             game.snake_speed -= 5;
+        }
+
+        // Poison apple collision check
+        if (snake->head->x == pApple_x && snake->head->y == pApple_y) {
+            shrink_snake(snake);
+            place_pApple(renderer, &pApple_x, &pApple_y);
+            game.snake_speed += 5;
+
         }
 
         //  Snake segment collision check
