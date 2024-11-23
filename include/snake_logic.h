@@ -21,3 +21,4 @@ Snake *init_snake (int start_x, int start_y, int start_length, char start_direct
 void move_snake(Snake *snake);
 void grow_snake(Snake *snake);
 void shrink_snake(Snake *snake);
+bool self_collision(SnakeSegment *head, int head_x, int head_y);

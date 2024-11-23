@@ -12,8 +12,8 @@ int random_in_range(int min, int max) {
 
 
 void place_apple(SDL_Renderer *renderer, Sint32 *apple_x, Sint32 *apple_y) {
-    *apple_x = random_in_range(0, 59);
-    *apple_y = random_in_range(0, 79);
+    *apple_x = random_in_range(0, 79);
+    *apple_y = random_in_range(0, 59);
 }
 
 int main () {
@@ -108,10 +108,17 @@ int main () {
             currentHead = currentHead->next;
         }
         
+        // Apple collision check
         if (snake->head->x == apple_x && snake->head->y == apple_y) {
             grow_snake(snake);
             place_apple(renderer, &apple_x, &apple_y);
         }
+
+        //  Snake segment collision check
+        if (self_collision(snake->head, snake->head->x, snake->head->y)) {
+            game.running = false;
+            printf("you died");
+        }   
 
         SDL_RenderPresent(renderer);
 

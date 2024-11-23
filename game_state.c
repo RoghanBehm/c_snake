@@ -7,5 +7,5 @@ GameState game = {
     .running = 1,
     .window = NULL,
     .renderer = NULL,
-    .snake_speed = 200
+    .snake_speed = 100
 };

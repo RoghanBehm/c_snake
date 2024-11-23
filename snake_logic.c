@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "snake_logic.h"
 
 Snake *init_snake (int start_x, int start_y, int start_length, char start_direction) {
@@ -9,7 +10,7 @@ Snake *init_snake (int start_x, int start_y, int start_length, char start_direct
 
     for (int i = 0; i < start_length; i++) {
         SnakeSegment *new_segment = malloc(sizeof(SnakeSegment));
-        new_segment->x = start_x - i;
+        new_segment->x = start_x - (i * 10);
         new_segment->y = start_y;
         new_segment->next = NULL;
         new_segment->prev = NULL;
@@ -88,3 +89,13 @@ void shrink_snake(Snake *snake) {
     free(old_tail);
 }
 
+bool self_collision(SnakeSegment *head, int head_x, int head_y) {
+    SnakeSegment *current = head->next;
+    while (current != NULL) {
+        if (head_x == current->x && head_y == current->y) {
+            return true;
+        }
+        current = current->next;
+    }
+    return false;
+}
