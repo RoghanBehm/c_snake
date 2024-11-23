@@ -120,6 +120,12 @@ int main () {
             printf("you died");
         }   
 
+        // Wall collision check
+        if (snake->head->x < 0 || snake->head->x >= 80 || snake->head->y < 0 || snake->head->y >= 60) {
+            game.running = false;
+            printf("you died");
+        }
+
         SDL_RenderPresent(renderer);
 
         frameTime = SDL_GetTicks();
