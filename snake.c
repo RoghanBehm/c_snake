@@ -70,6 +70,12 @@ int main () {
         return 1;
     }
 
+        SDL_Texture *frog_img = IMG_LoadTexture(renderer, "assets/frog.png");
+    if (!frog_img) {
+        printf("Failed to load apple texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
     SDL_Color text_color = {255, 255, 255, 255};
     
 
@@ -169,8 +175,12 @@ int main () {
         SnakeSegment *currentHead = snake->head;
         while (currentHead != NULL) {
             SDL_Rect seg = {currentHead->x * game.cell_size, currentHead->y * game.cell_size, game.cell_size, game.cell_size};
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-            SDL_RenderFillRect(renderer, &seg);
+            if (currentHead->prev == NULL) {
+                SDL_RenderCopy(renderer, frog_img, NULL, &seg);
+            } else {
+                SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+                SDL_RenderFillRect(renderer, &seg);
+            }
             currentHead = currentHead->next;
         }
 
