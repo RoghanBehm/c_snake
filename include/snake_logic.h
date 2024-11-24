@@ -14,6 +14,7 @@ typedef struct {
     SnakeSegment *head;
     SnakeSegment *tail;
     char direction;
+    char prev_direction;
 } Snake;
 
 void move_snake(Snake *snake);

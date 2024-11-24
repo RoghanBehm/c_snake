@@ -5,6 +5,9 @@
 #include "game_state.h"
 #include "snake_logic.h"
 
+#define GRID_WIDTH (game.window_width / game.cell_size)
+#define GRID_HEIGHT (game.window_height / game.cell_size)
+
 bool apple_flag = false;
 bool pApple_flag = false;
 bool direction_changed = false;
@@ -16,13 +19,13 @@ int random_in_range(int min, int max) {
 
 
 void place_apple(SDL_Renderer *renderer, Sint32 *apple_x, Sint32 *apple_y) {
-    *apple_x = random_in_range(0, 79);
-    *apple_y = random_in_range(0, 59);
+    *apple_x = random_in_range(0, GRID_WIDTH - 1);
+    *apple_y = random_in_range(0, GRID_HEIGHT - 1);
 }
 
 void place_pApple(SDL_Renderer *renderer, Sint32 *pApple_x, Sint32 *pApple_y) {
-    *pApple_x = random_in_range(0, 79);
-    *pApple_y = random_in_range(0, 59);
+    *pApple_x = random_in_range(0, GRID_WIDTH - 1);
+    *pApple_y = random_in_range(0, GRID_HEIGHT - 1);
 }
 
 int main () {
@@ -71,7 +74,7 @@ int main () {
     Uint32 frameStart;
     int frameTime;
     Uint32 last_timestamp = 0;
-    Snake *snake = init_snake(50, 50, 3, 'R');
+    Snake *snake = init_snake(100, 0, 3, 'R');
     Sint32 apple_x = 0;
     Sint32 apple_y = 0;
     Sint32 pApple_x = 0;
@@ -87,6 +90,7 @@ int main () {
                 switch (event.key.keysym.sym) {
                     case SDLK_w:
                         if (snake->direction != 'D') {
+                            snake->prev_direction = snake->direction;
                             snake->direction = 'U';
                             direction_changed = true;
                             break;
@@ -94,12 +98,14 @@ int main () {
                             
                     case SDLK_s:
                         if (snake->direction != 'U') {
+                            snake->prev_direction = snake->direction;
                             snake->direction = 'D';
                             direction_changed = true;
                             break;
                         }
                     case SDLK_d:
                         if (snake->direction != 'L') {
+                            snake->prev_direction = snake->direction;
                             snake->direction = 'R';
                             direction_changed = true;
                             break;
@@ -107,6 +113,7 @@ int main () {
                             
                     case SDLK_a:
                         if (snake->direction != 'R') {
+                            snake->prev_direction = snake->direction;
                            snake->direction = 'L';
                             direction_changed = true;
                             break; 
@@ -130,12 +137,12 @@ int main () {
 
         
         // Draw apple
-        SDL_Rect apple = {apple_x * 10, apple_y * 10, 10, 10};
+        SDL_Rect apple = {apple_x * game.cell_size, apple_y * game.cell_size, game.cell_size, game.cell_size};
         SDL_SetRenderDrawColor(renderer, 144, 238, 144, 255);
         SDL_RenderFillRect(renderer, &apple);
 
         // Draw poison apple
-        SDL_Rect pApple = {pApple_x * 10, pApple_y * 10, 10, 10};
+        SDL_Rect pApple = {pApple_x * game.cell_size, pApple_y * game.cell_size, game.cell_size, game.cell_size};
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         SDL_RenderFillRect(renderer, &pApple);
 
@@ -149,10 +156,12 @@ int main () {
             pApple_flag = true;
         }
 
+
+
         // Draw segments
         SnakeSegment *currentHead = snake->head;
         while (currentHead != NULL) {
-            SDL_Rect seg = {currentHead->x * 10, currentHead->y * 10, 10, 10};
+            SDL_Rect seg = {currentHead->x * game.cell_size, currentHead->y * game.cell_size, game.cell_size, game.cell_size};
             SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
             SDL_RenderFillRect(renderer, &seg);
             currentHead = currentHead->next;
@@ -201,7 +210,8 @@ int main () {
         }   
 
         // Wall collision check
-        if (snake->head->x < 0 || snake->head->x >= 80 || snake->head->y < 0 || snake->head->y >= 60) {
+        if (snake->head->x < 0 || snake->head->x >= GRID_WIDTH || 
+            snake->head->y < 0 || snake->head->y >= GRID_HEIGHT) {
             game.running = false;
             printf("you died");
         }

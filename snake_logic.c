@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "snake_logic.h"
+#include "game_state.h"
 
 Snake *init_snake (int start_x, int start_y, int start_length, char start_direction) {
     Snake *snake = malloc(sizeof(Snake));
     snake->head = NULL;
     snake->tail = NULL;
     snake->direction = start_direction;
+    snake->prev_direction;
 
     for (int i = 0; i < start_length; i++) {
         SnakeSegment *new_segment = malloc(sizeof(SnakeSegment));
-        new_segment->x = start_x - (i * 10);
+        new_segment->x = start_x - (i * game.cell_size);
         new_segment->y = start_y;
         new_segment->next = NULL;
         new_segment->prev = NULL;
