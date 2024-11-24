@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>   
+#include <SDL2/SDL_image.h>
 #include <stdbool.h>
 #include "game_state.h"
 #include "snake_logic.h"
@@ -60,6 +61,12 @@ int main () {
     TTF_Font *font = TTF_OpenFont("fonts/Roboto-Thin.ttf", 24);
     if (!font) {
         printf("Font didn't load :-()");
+        return 1;
+    }
+
+    SDL_Texture *cherry_img = IMG_LoadTexture(renderer, "assets/cerry.png");
+    if (!cherry_img) {
+        printf("Failed to load apple texture: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -139,7 +146,7 @@ int main () {
         // Draw apple
         SDL_Rect apple = {apple_x * game.cell_size, apple_y * game.cell_size, game.cell_size, game.cell_size};
         SDL_SetRenderDrawColor(renderer, 144, 238, 144, 255);
-        SDL_RenderFillRect(renderer, &apple);
+        SDL_RenderCopy(renderer, cherry_img, NULL, &apple);
 
         // Draw poison apple
         SDL_Rect pApple = {pApple_x * game.cell_size, pApple_y * game.cell_size, game.cell_size, game.cell_size};
@@ -193,6 +200,7 @@ int main () {
         }
 
         SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+
         SDL_FreeSurface(text_surface);
 
         if (!text_texture) {
@@ -226,6 +234,7 @@ int main () {
 
     
     TTF_CloseFont(font);
+    SDL_DestroyTexture(cherry_img);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_Quit();
