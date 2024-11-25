@@ -70,9 +70,27 @@ int main () {
         return 1;
     }
 
-        SDL_Texture *frog_img = IMG_LoadTexture(renderer, "assets/frog.png");
+    SDL_Texture *frog_img = IMG_LoadTexture(renderer, "assets/frog.png");
     if (!frog_img) {
-        printf("Failed to load apple texture: %s\n", SDL_GetError());
+        printf("Failed to load frog_img texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Texture *frog_right = IMG_LoadTexture(renderer, "assets/frog90.png");
+    if (!frog_right) {
+        printf("Failed to load frog_right texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Texture *frog_down = IMG_LoadTexture(renderer, "assets/frog180.png");
+    if (!frog_down) {
+        printf("Failed to load frog_down texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Texture *frog_left = IMG_LoadTexture(renderer, "assets/frog270.png");
+    if (!frog_left) {
+        printf("Failed to load frog_left texture: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -176,7 +194,21 @@ int main () {
         while (currentHead != NULL) {
             SDL_Rect seg = {currentHead->x * game.cell_size, currentHead->y * game.cell_size, game.cell_size, game.cell_size};
             if (currentHead->prev == NULL) {
-                SDL_RenderCopy(renderer, frog_img, NULL, &seg);
+                switch (snake->direction) {
+                    case 'U':
+                        SDL_RenderCopy(renderer, frog_img, NULL, &seg);    
+                        break;
+                    case 'R':
+                        SDL_RenderCopy(renderer, frog_right, NULL, &seg);
+                        break;
+                    case 'D':
+                        SDL_RenderCopy(renderer, frog_down, NULL, &seg);
+                        break;
+                    case 'L':
+                        SDL_RenderCopy(renderer, frog_left, NULL, &seg);
+                    
+                }
+                
             } else {
                 SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
                 SDL_RenderFillRect(renderer, &seg);
