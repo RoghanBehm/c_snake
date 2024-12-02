@@ -142,6 +142,34 @@ int main()
         return 1;
     }
 
+    SDL_Texture *frog_tail_up = IMG_LoadTexture(renderer, "assets/tail-up.png");
+    if (!frog_tail_up)
+    {
+        printf("Failed to load frog_tail_up texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Texture *frog_tail_down = IMG_LoadTexture(renderer, "assets/tail-down.png");
+    if (!frog_tail_down)
+    {
+        printf("Failed to load frog_tail_down texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Texture *frog_tail_right = IMG_LoadTexture(renderer, "assets/tail-right.png");
+    if (!frog_tail_right)
+    {
+        printf("Failed to load frog_tail_right texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Texture *frog_tail_left = IMG_LoadTexture(renderer, "assets/tail-left.png");
+    if (!frog_tail_left)
+    {
+        printf("Failed to load frog_tail_left texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
     SDL_Color text_color = {255, 255, 255, 255};
 
     SDL_Event event;
@@ -282,28 +310,49 @@ int main()
                 case 'L':
                     SDL_RenderCopy(renderer, frog_left, NULL, &seg);
                 }
-            }else if (currentHead->next == NULL) {  // Tail segment
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        SDL_RenderFillRect(renderer, &seg);
-    } else {  // Body segment
-        char current_dir = currentHead->direction;
-        char next_dir = currentHead->next->direction;
-
-        if (current_dir != next_dir) {  // Turn detected
-            for (int i = 0; i < sizeof(turnAssets) / sizeof(turnAssets[0]); i++) {
-                if (turnAssets[i].prev_dir == current_dir &&
-                    turnAssets[i].dir == next_dir) {
-                    SDL_RenderCopy(renderer, turnAssets[i].image, NULL, &seg);
+            }
+            else if (currentHead->next == NULL)
+            {
+                switch (currentHead->direction)
+                {
+                case 'U':
+                    SDL_RenderCopy(renderer, frog_tail_up, NULL, &seg);
                     break;
+                case 'R':
+                    SDL_RenderCopy(renderer, frog_tail_right, NULL, &seg);
+                    break;
+                case 'D':
+                    SDL_RenderCopy(renderer, frog_tail_down, NULL, &seg);
+                    break;
+                case 'L':
+                    SDL_RenderCopy(renderer, frog_tail_left, NULL, &seg);
                 }
             }
-        } else {  // Straight body segment
-            SDL_RenderCopy(renderer, frog_body, NULL, &seg);
-        }
-    }
+            else
+            {
+                char current_dir = currentHead->direction;
+                char next_dir = currentHead->next->direction;
 
-    currentHead = currentHead->next;
-}
+                if (current_dir != next_dir)
+                {
+                    for (int i = 0; i < sizeof(turnAssets) / sizeof(turnAssets[0]); i++)
+                    {
+                        if (turnAssets[i].prev_dir == current_dir &&
+                            turnAssets[i].dir == next_dir)
+                        {
+                            SDL_RenderCopy(renderer, turnAssets[i].image, NULL, &seg);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    SDL_RenderCopy(renderer, frog_body, NULL, &seg);
+                }
+            }
+
+            currentHead = currentHead->next;
+        }
 
         // Apple collision check
         if (snake->head->x == apple_x && snake->head->y == apple_y)
