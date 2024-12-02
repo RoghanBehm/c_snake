@@ -14,6 +14,8 @@ Snake *init_snake (int start_x, int start_y, int start_length, char start_direct
         SnakeSegment *new_segment = malloc(sizeof(SnakeSegment));
         new_segment->x = start_x - (i * game.cell_size);
         new_segment->y = start_y;
+        new_segment->direction = start_direction;
+        new_segment->prev_direction = start_direction;
         new_segment->next = NULL;
         new_segment->prev = NULL;
 
@@ -46,11 +48,14 @@ void move_snake(Snake *snake) {
     SnakeSegment *new_head = malloc(sizeof(SnakeSegment));
     new_head->x = new_x;
     new_head->y = new_y;
+    new_head->direction = snake->direction;
+    new_head->prev_direction = snake->prev_direction;
     new_head->prev = NULL;
     new_head->next = snake->head;
 
     if(snake->head) {
         snake->head->prev = new_head;
+        snake->head->direction = snake->direction;
     }
     snake->head = new_head;
 

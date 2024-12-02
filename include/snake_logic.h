@@ -6,6 +6,8 @@
 typedef struct SnakeSegment {
     int x;
     int y;
+    char direction;
+    char prev_direction;
     struct SnakeSegment *next;
     struct SnakeSegment *prev;
 } SnakeSegment;
